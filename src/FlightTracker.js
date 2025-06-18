@@ -8,7 +8,7 @@ export default function FlightTracker() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-	  const API_URL = 'https://x0k8f87esd.execute-api.us-east-1.amazonaws.com/GetFlightPickupInfo'; // replace with your actual API Gateway URL
+  const API_URL = 'https://your-api-id.execute-api.region.amazonaws.com/flight'; // replace with your actual API Gateway URL
 
   const handleTrackFlight = async () => {
     if (!flightNumber || !location) {
@@ -36,7 +36,10 @@ export default function FlightTracker() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold mb-4 text-center">Smart Airport Pickup Planner</h1>
+      <head>
+        <title>AI Flight Tracker</title>
+      </head>
+      <h1 className="text-3xl font-bold mb-4 text-center">AI Flight Tracker</h1>
 
       <div className="max-w-xl mx-auto bg-white rounded-xl shadow-md p-6">
         <div className="mb-4">
@@ -82,9 +85,10 @@ export default function FlightTracker() {
             <p><strong>Travel Time:</strong> {result.estimated_travel_time}</p>
             <p><strong>Leave By:</strong> {result.leave_by}</p>
             {result.delay_risk_message && (
-              <p className="mt-4 font-semibold text-yellow-600">
-                {result.delay_risk_message}
-              </p>
+              <div className="mt-4">
+                <h3 className="font-semibold text-gray-700">AI Suggestion:</h3>
+                <p className="text-yellow-600 font-medium">{result.delay_risk_message}</p>
+              </div>
             )}
           </div>
         )}
