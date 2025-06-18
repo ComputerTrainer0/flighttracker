@@ -4,16 +4,15 @@ import axios from 'axios';
 export default function FlightTracker() {
   const [flightNumber, setFlightNumber] = useState('');
   const [location, setLocation] = useState('');
-  const [date, setDate] = useState('today');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-	  const API_URL = 'https://x0k8f87esd.execute-api.us-east-1.amazonaws.com/GetFlightPickupInfo'; // replace with your actual API Gateway URL
+  const API_URL = 'https://your-api-id.execute-api.region.amazonaws.com/flight'; // replace with your actual API Gateway URL
 
   const handleTrackFlight = async () => {
     if (!flightNumber || !location) {
-      setError('Please enter flight number, location, and date.');
+      setError('Please enter both flight number and location.');
       return;
     }
     setLoading(true);
@@ -24,8 +23,7 @@ export default function FlightTracker() {
       const response = await axios.get(API_URL, {
         params: {
           flight: flightNumber,
-          location: location,
-          date: date
+          location: location
         }
       });
       setResult(response.data);
@@ -64,18 +62,6 @@ export default function FlightTracker() {
             className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             placeholder="e.g. Bracknell"
           />
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-md font-semibold text-gray-800 mb-1">Select Date</label>
-          <select
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          >
-            <option value="today">Today</option>
-            <option value="tomorrow">Tomorrow</option>
-          </select>
         </div>
 
         <button
