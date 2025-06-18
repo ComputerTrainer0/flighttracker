@@ -8,7 +8,7 @@ export default function FlightTracker() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_URL = 'https://your-api-id.execute-api.region.amazonaws.com/flight'; // replace with your actual API Gateway URL
+	  const API_URL = 'https://x0k8f87esd.execute-api.us-east-1.amazonaws.com/GetFlightPickupInfo'; // replace with your actual API Gateway URL
 
   const handleTrackFlight = async () => {
     if (!flightNumber || !location) {
