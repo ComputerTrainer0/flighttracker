@@ -100,6 +100,10 @@ export default function FlightTracker() {
                   <td className="px-4 py-2 font-semibold">Flight Date</td>
                   <td className="px-4 py-2">{result.flight_date}</td>
                 </tr>
+                <tr>
+                  <td className="px-4 py-2 font-semibold">Flight From</td>
+                  <td className="px-4 py-2">{result.departure_airport}</td>
+                </tr>
                 <tr className="bg-gray-100">
                   <td className="px-4 py-2 font-semibold">Flight To</td>
                   <td className="px-4 py-2">{result.arrival_airport} (Terminal {result.arrival_terminal || 'N/A'})</td>
