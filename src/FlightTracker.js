@@ -4,15 +4,16 @@ import axios from 'axios';
 export default function FlightTracker() {
   const [flightNumber, setFlightNumber] = useState('');
   const [location, setLocation] = useState('');
+  const [date, setDate] = useState('today');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-	  const API_URL = 'https://x0k8f87esd.execute-api.us-east-1.amazonaws.com/GetFlightPickupInfo'; // replace with your actual API Gateway URL
+	const API_URL = 'https://x0k8f87esd.execute-api.us-east-1.amazonaws.com/GetFlightPickupInfo'; // replace with your actual API Gateway URL
 
   const handleTrackFlight = async () => {
     if (!flightNumber || !location) {
-      setError('Please enter both flight number and location.');
+      setError('Please enter flight number, location, and date.');
       return;
     }
     setLoading(true);
@@ -23,7 +24,8 @@ export default function FlightTracker() {
       const response = await axios.get(API_URL, {
         params: {
           flight: flightNumber,
-          location: location
+          location: location,
+          date: date
         }
       });
       setResult(response.data);
@@ -35,13 +37,13 @@ export default function FlightTracker() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-6 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-6 font-sans flex flex-col items-center justify-center">
       <head>
         <title>AI Flight Tracker</title>
       </head>
       <h1 className="text-4xl font-extrabold mb-8 text-center text-indigo-800 drop-shadow-sm">AI Flight Tracker ✈️</h1>
 
-      <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-lg p-8">
+      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-lg p-8">
         <div className="mb-6">
           <label className="block text-md font-semibold text-gray-800 mb-1">Flight Number</label>
           <input
@@ -64,30 +66,73 @@ export default function FlightTracker() {
           />
         </div>
 
-        <button
-          onClick={handleTrackFlight}
-          disabled={loading}
-          className="w-full bg-indigo-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-indigo-700 transition duration-200"
-        >
-          {loading ? 'Loading...' : 'Track Flight'}
-        </button>
+        <div className="mb-6">
+          <label className="block text-md font-semibold text-gray-800 mb-1">Select Date</label>
+          <select
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            <option value="yesterday">Yesterday</option>
+            <option value="today">Today</option>
+            <option value="tomorrow">Tomorrow</option>
+          </select>
+        </div>
+
+        <div className="flex justify-center">
+          <button
+            onClick={handleTrackFlight}
+            disabled={loading}
+            className="bg-indigo-600 text-white py-3 px-6 rounded-xl text-lg font-semibold hover:bg-indigo-700 transition duration-200"
+          >
+            {loading ? 'Loading...' : 'Track Flight'}
+          </button>
+        </div>
 
         {error && <p className="mt-4 text-red-600 text-sm text-center font-medium">{error}</p>}
 
         {result && (
           <div className="mt-8 border-t pt-6">
             <h2 className="text-2xl font-bold mb-4 text-indigo-700">Flight Information</h2>
-            <div className="space-y-2 text-gray-800">
-              <p><strong>Status:</strong> {result.status}</p>
-              <p><strong>Arrival Airport:</strong> {result.arrival_airport} (Terminal {result.arrival_terminal})</p>
-              <p><strong>Scheduled Arrival:</strong> {result.scheduled_arrival}</p>
-              <p><strong>Estimated Arrival:</strong> {result.estimated_arrival}</p>
-              <p><strong>Actual Arrival:</strong> {result.actual_arrival}</p>
-              <p><strong>Travel Time:</strong> {result.estimated_travel_time}</p>
-              <p><strong>Leave By:</strong> {result.leave_by}</p>
-            </div>
+            <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden">
+              <tbody className="text-gray-800">
+                <tr className="bg-gray-100">
+                  <td className="px-4 py-2 font-semibold">Flight Date</td>
+                  <td className="px-4 py-2">{result.flight_date}</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2 font-semibold">Status</td>
+                  <td className="px-4 py-2">{result.status}</td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-4 py-2 font-semibold">Arrival Airport</td>
+                  <td className="px-4 py-2">{result.arrival_airport} (Terminal {result.arrival_terminal || 'N/A'})</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2 font-semibold">Scheduled Arrival</td>
+                  <td className="px-4 py-2">{result.scheduled_arrival}</td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-4 py-2 font-semibold">Estimated Arrival</td>
+                  <td className="px-4 py-2">{result.estimated_arrival}</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2 font-semibold">Actual Arrival</td>
+                  <td className="px-4 py-2">{result.actual_arrival}</td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-4 py-2 font-semibold">Travel Time</td>
+                  <td className="px-4 py-2">{result.estimated_travel_time}</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2 font-semibold">Leave By</td>
+                  <td className="px-4 py-2">{result.leave_by}</td>
+                </tr>
+              </tbody>
+            </table>
+
             {result.delay_risk_message && (
-              <div className="mt-6 bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-lg">
+              <div className="mt-6 text-center">
                 <h3 className="text-md font-bold text-yellow-700 mb-1">AI Suggestion:</h3>
                 <p className="text-yellow-800 font-medium">{result.delay_risk_message}</p>
               </div>
