@@ -138,10 +138,6 @@ export default function FlightTracker() {
                   <td className="px-4 py-2 font-semibold">Leave By</td>
                   <td className="px-4 py-2">{result.leave_by}</td>
                 </tr>
-                <tr className="bg-gray-100">
-                  <td className="px-4 py-2 font-semibold">Live Traffic Condition</td>
-                  <td className="px-4 py-2">{result.traffic_condition}</td>
-                </tr>
               </tbody>
             </table>
 
