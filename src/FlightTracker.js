@@ -133,7 +133,7 @@ export default function FlightTracker() {
 
             {result.delay_risk_message && (
               <div className="mt-6 text-center">
-                <h3 className="text-md font-bold text-yellow-700 mb-1">AI Suggestion:</h3>
+                <h3 className="text-md font-bold text-yellow-700 mb-1">AI Suggestion (Last 5-7 Flights compared):</h3>
                 <p className="text-yellow-800 font-medium">{result.delay_risk_message}</p>
               </div>
             )}
