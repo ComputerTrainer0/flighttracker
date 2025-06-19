@@ -39,9 +39,9 @@ export default function FlightTracker() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-6 font-sans flex flex-col items-center justify-center">
       <head>
-        <title>AI Flight Tracker</title>
+        <title>AI Flight Arrival Tracker</title>
       </head>
-      <h1 className="text-4xl font-extrabold mb-8 text-center text-indigo-800 drop-shadow-sm">AI Flight Tracker ✈️</h1>
+      <h1 className="text-4xl font-extrabold mb-8 text-center text-indigo-800 drop-shadow-sm">AI Flight Arrival Tracker ✈️</h1>
 
       <div className="w-full max-w-2xl bg-white rounded-3xl shadow-lg p-8">
         <div className="mb-6">
