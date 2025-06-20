@@ -1,155 +1,113 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import './App.css';
 
-export default function FlightTracker() {
-  const [flightNumber, setFlightNumber] = useState('');
+function App() {
+  const [flight, setFlight] = useState('');
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('today');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-	  const API_URL = 'https://x0k8f87esd.execute-api.us-east-1.amazonaws.com/GetFlightPickupInfo'; // replace with your actual API Gateway URL
-
-  const handleTrackFlight = async () => {
-    if (!flightNumber || !location) {
-      setError('Please enter flight number, location, and date.');
-      return;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    setError(null);
     setResult(null);
-
     try {
-      const response = await axios.get(API_URL, {
-        params: {
-          flight: flightNumber,
-          location: location,
-          date: date
-        }
-      });
-      setResult(response.data);
+      const url = `https://x0k8f87esd.execute-api.us-east-1.amazonaws.com/GetFlightPickupInfo?flight=${flight}&location=${encodeURIComponent(location)}&date=${date}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setResult(data);
     } catch (err) {
-      setError('Failed to fetch flight data. Please check inputs and try again.');
+      console.error(err);
+      setResult({ error: 'Something went wrong.' });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-6 font-sans flex flex-col items-center justify-center">
-      <head>
+    <div className="app">
+
+	            <head>
         <title>AI Flight Arrival Tracker</title>
       </head>
-      <h1 className="text-4xl font-extrabold mb-8 text-center text-indigo-800 drop-shadow-sm">AI Flight Arrival Tracker ✈️</h1>
 
-      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-lg p-8">
-        <div className="mb-6">
-          <label className="block text-md font-semibold text-gray-800 mb-1">Flight Number</label>
-          <input
-            type="text"
-            value={flightNumber}
-            onChange={(e) => setFlightNumber(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="e.g. BA663"
-          />
-        </div>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>🛬 AI Flight Arrival Tracker</h1>
 
-        <div className="mb-6">
-          <label className="block text-md font-semibold text-gray-800 mb-1">Your Location</label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="e.g. Bracknell"
-          />
-        </div>
+      <form onSubmit={handleSubmit} style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <input
+          type="text"
+          value={flight}
+          onChange={(e) => setFlight(e.target.value)}
+          placeholder="Enter Flight Number (e.g., BA198)"
+          required
+          style={{ margin: '10px', padding: '10px' }}
+        />
+        <input
+          type="text"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder="Enter Your Starting Location"
+          required
+          style={{ margin: '10px', padding: '10px' }}
+        />
+        <select value={date} onChange={(e) => setDate(e.target.value)} style={{ margin: '10px', padding: '10px' }}>
+          <option value="yesterday">Yesterday</option>
+          <option value="today">Today</option>
+          <option value="tomorrow">Tomorrow</option>
+        </select>
+        <button type="submit" style={{ padding: '10px 20px' }}>
+          Track Arrival
+        </button>
+      </form>
 
-        <div className="mb-6">
-          <label className="block text-md font-semibold text-gray-800 mb-1">Select Date</label>
-          <select
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          >
-            <option value="yesterday">Yesterday</option>
-            <option value="today">Today</option>
-            <option value="tomorrow">Tomorrow</option>
-          </select>
-        </div>
+      {loading && <p style={{ textAlign: 'center' }}>Fetching flight info...</p>}
 
-        <div className="flex justify-center">
-          <button
-            onClick={handleTrackFlight}
-            disabled={loading}
-            className="bg-indigo-600 text-white py-3 px-6 rounded-xl text-lg font-semibold hover:bg-indigo-700 transition duration-200"
-          >
-            {loading ? 'Loading...' : 'Track Flight'}
-          </button>
-        </div>
+      {result && !result.error && (
+        <div className="result-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <table className="result-table" style={{ borderCollapse: 'collapse', width: '90%', maxWidth: '800px', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <thead>
+              <tr>
+                <th>Flight Number</th>
+                <th>Flight Date</th>
+                <th>Status</th>
+                <th>Flight From</th>
+                <th>Flight To</th>
+                <th>Scheduled</th>
+                <th>Estimated</th>
+                <th>Actual</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{result.flight_number}</td>
+                <td>{result.flight_date}</td>
+                <td>{result.status}</td>
+                <td>{result.departure_airport}</td>
+                <td>{result.arrival_airport}</td>
+                <td>{result.scheduled_arrival}</td>
+                <td>{result.estimated_arrival}</td>
+                <td>{result.actual_arrival}</td>
+              </tr>
+            </tbody>
+          </table>
 
-        {error && <p className="mt-4 text-red-600 text-sm text-center font-medium">{error}</p>}
-
-        {result && (
-          <div className="mt-8 border-t pt-6">
-            <h2 className="text-2xl font-bold mb-4 text-indigo-700">Flight Information</h2>
-            <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden">
-              <tbody className="text-gray-800">
-                <tr className="bg-gray-100">
-                  <td className="px-4 py-2 font-semibold">Flight Date</td>
-                  <td className="px-4 py-2">{result.flight_date}</td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-2 font-semibold">Flight From</td>
-                  <td className="px-4 py-2">{result.departure_airport}</td>
-                </tr>
-                <tr className="bg-gray-100">
-                  <td className="px-4 py-2 font-semibold">Flight To</td>
-                  <td className="px-4 py-2">{result.arrival_airport} (Terminal {result.arrival_terminal || 'N/A'})</td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-2 font-semibold">Status</td>
-                  <td className="px-4 py-2">{result.status}</td>
-                </tr>
-                <tr className="bg-gray-100">
-                  <td className="px-4 py-2 font-semibold">Scheduled Arrival</td>
-                  <td className="px-4 py-2">{result.scheduled_arrival}</td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-2 font-semibold">Estimated Arrival</td>
-                  <td className="px-4 py-2">{result.estimated_arrival}</td>
-                </tr>
-                <tr className="bg-gray-100">
-                  <td className="px-4 py-2 font-semibold">Actual Arrival</td>
-                  <td className="px-4 py-2">{result.actual_arrival}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h2 className="text-2xl font-bold mt-10 mb-4 text-indigo-700">Driving Information</h2>
-            <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden">
-              <tbody className="text-gray-800">
-                <tr className="bg-gray-100">
-                  <td className="px-4 py-2 font-semibold">Estimated Travel Time</td>
-                  <td className="px-4 py-2">{result.estimated_travel_time}</td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-2 font-semibold">Leave By</td>
-                  <td className="px-4 py-2">{result.leave_by}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {result.delay_risk_message && (
-              <div className="mt-6 text-center">
-                <h3 className="text-md font-bold text-yellow-700 mb-1">AI Suggestion (Compared Last 5 - 7 Flights):</h3>
-                <p className="text-yellow-800 font-medium">{result.delay_risk_message}</p>
-              </div>
-            )}
+          <div style={{ marginTop: '30px', textAlign: 'center' }}>
+            <h3>🚗 Driving Information</h3>
+            <p><strong>Estimated Travel Time:</strong> {result.estimated_travel_time}</p>
+            <p><strong>Leave By:</strong> {result.leave_by}</p>
           </div>
-        )}
-      </div>
+
+          <div style={{ marginTop: '20px', textAlign: 'center', fontWeight: 'bold' }}>
+            🧠 <span>AI Suggestion (Compared Last 5 - 7 Flights):</span>
+            <p>{result.delay_risk_message}</p>
+          </div>
+        </div>
+      )}
+
+      {result && result.error && <p style={{ color: 'red', textAlign: 'center' }}>{result.error}</p>}
     </div>
   );
 }
+
+export default App;
