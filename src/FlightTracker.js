@@ -13,9 +13,8 @@ function App() {
     setLoading(true);
     setResult(null);
     try {
-      const response = await fetch(
-        `/prod/departure?flight=${flight}&location=${encodeURIComponent(location)}&date=${date}`
-      );
+      const url = `https://17hovlzcka.execute-api.us-east-1.amazonaws.com/departure?flight=${flight}&location=${encodeURIComponent(location)}&date=${date}`;
+      const response = await fetch(url);
       const data = await response.json();
       setResult(data);
     } catch (err) {
@@ -28,10 +27,6 @@ function App() {
 
   return (
     <div className="app">
-
-          <head>
-        <title>AI Flight Departure Tracker</title>
-      </head>
       <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>🛫 AI Flight Departure Tracker</h1>
 
       <form onSubmit={handleSubmit} style={{ textAlign: 'center', marginBottom: '30px' }}>
