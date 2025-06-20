@@ -5,63 +5,70 @@ function App() {
   const [flight, setFlight] = useState('');
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('today');
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    setError(null);
-    setData(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
     try {
-      const res = await fetch(
-        `https://17hovlzcka.execute-api.us-east-1.amazonaws.com/departure?flight=${flight}&location=${encodeURIComponent(
-          location
-        )}&date=${date}`
+      const response = await fetch(
+        `/prod/departure?flight=${flight}&location=${encodeURIComponent(location)}&date=${date}`
       );
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
-      setData(json);
-    } catch (e) {
-      setError(e.message);
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      console.error(err);
+      setResult({ error: 'Something went wrong.' });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="App">
-      <h1 className="title">AI Flight Departure Tracker</h1>
-      <div className="form">
+    <div className="app">
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>🛫 AI Flight Departure Tracker</h1>
+
+      <form onSubmit={handleSubmit} style={{ textAlign: 'center', marginBottom: '30px' }}>
         <input
-          placeholder="Flight Number (e.g. BA198)"
+          type="text"
           value={flight}
           onChange={(e) => setFlight(e.target.value)}
+          placeholder="Enter Flight Number (e.g., BA198)"
+          required
+          style={{ margin: '10px', padding: '10px' }}
         />
         <input
-          placeholder="Your Start Location"
+          type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          placeholder="Enter Your Starting Location"
+          required
+          style={{ margin: '10px', padding: '10px' }}
         />
-        <select value={date} onChange={(e) => setDate(e.target.value)}>
+        <select value={date} onChange={(e) => setDate(e.target.value)} style={{ margin: '10px', padding: '10px' }}>
           <option value="yesterday">Yesterday</option>
           <option value="today">Today</option>
           <option value="tomorrow">Tomorrow</option>
         </select>
-        <button onClick={handleSubmit}>Track Departure</button>
-      </div>
+        <button type="submit" style={{ padding: '10px 20px' }}>
+          Track Departure
+        </button>
+      </form>
 
-      {error && <div className="error">{error}</div>}
+      {loading && <p style={{ textAlign: 'center' }}>Fetching flight info...</p>}
 
-
-      {data && (
-        <div className="result-table">
-                <h2>Flight  Information</h2>
-          <p>
-          <table>
+      {result && !result.error && (
+        <div className="result-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <table className="result-table" style={{ borderCollapse: 'collapse', width: '90%', maxWidth: '800px', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
             <thead>
               <tr>
-                <th>Flight No.</th>
-                <th>Date</th>
+                <th>Flight Number</th>
+                <th>Flight Date</th>
                 <th>Status</th>
-                <th>From</th>
-                <th>To</th>
+                <th>Flight From</th>
+                <th>Flight To</th>
                 <th>Scheduled</th>
                 <th>Estimated</th>
                 <th>Actual</th>
@@ -69,30 +76,32 @@ function App() {
             </thead>
             <tbody>
               <tr>
-                <td>{data.flight_number}</td>
-                <td>{data.flight_date}</td>
-                <td>{data.status}</td>
-                <td>{data.departure_airport}</td>
-                <td>{data.arrival_airport}</td>
-                <td>{data.scheduled_departure}</td>
-                <td>{data.estimated_departure}</td>
-                <td>{data.actual_departure}</td>
+                <td>{result.flight_number}</td>
+                <td>{result.flight_date}</td>
+                <td>{result.status}</td>
+                <td>{result.departure_airport}</td>
+                <td>{result.arrival_airport}</td>
+                <td>{result.scheduled_departure}</td>
+                <td>{result.estimated_departure}</td>
+                <td>{result.actual_departure}</td>
               </tr>
             </tbody>
           </table>
-        </p>
-          <h2>Driving Information</h2>
-          <p>
-            Estimated Travel Time: <strong>{data.estimated_travel_time}</strong>
-          </p>
-          <p>
-            You should leave by: <strong>{data.leave_by}</strong>
-          </p>
 
-          <h2 className="ai-title">AI Suggestion (Compared Last 5 - 7 Flights)</h2>
-          <p className="ai-msg">{data.delay_risk_message}</p>
+          <div style={{ marginTop: '30px', textAlign: 'center' }}>
+            <h3>🚗 Driving Information</h3>
+            <p><strong>Estimated Travel Time:</strong> {result.estimated_travel_time}</p>
+            <p><strong>Leave By:</strong> {result.leave_by}</p>
+          </div>
+
+          <div style={{ marginTop: '20px', textAlign: 'center', fontWeight: 'bold' }}>
+            🧠 <span>AI Suggestion (Compared Last 5 - 7 Flights):</span>
+            <p>{result.delay_risk_message}</p>
+          </div>
         </div>
       )}
+
+      {result && result.error && <p style={{ color: 'red', textAlign: 'center' }}>{result.error}</p>}
     </div>
   );
 }
