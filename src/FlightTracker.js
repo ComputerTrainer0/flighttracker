@@ -49,10 +49,11 @@ function App() {
 
       {error && <div className="error">{error}</div>}
 
-        <h2>Flight  Information</h2>
-          <p>
+
       {data && (
-        <div className="results">
+        <div className="result-table">
+                <h2>Flight  Information</h2>
+          <p>
           <table>
             <thead>
               <tr>
