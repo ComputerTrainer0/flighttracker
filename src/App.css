@@ -28,6 +28,28 @@
   color: #61dafb;
 }
 
+.result-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.result-table {
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 800px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.result-table th,
+.result-table td {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  text-align: center; /* ensure cells are centered */
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
