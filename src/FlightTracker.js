@@ -28,6 +28,10 @@ function App() {
 
   return (
     <div className="app">
+
+          <head>
+        <title>AI Flight Departure Tracker</title>
+      </head>
       <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>🛫 AI Flight Departure Tracker</h1>
 
       <form onSubmit={handleSubmit} style={{ textAlign: 'center', marginBottom: '30px' }}>
