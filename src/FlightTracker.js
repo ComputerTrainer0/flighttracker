@@ -49,6 +49,8 @@ function App() {
 
       {error && <div className="error">{error}</div>}
 
+        <h2>Flight  Information</h2>
+          <p>
       {data && (
         <div className="results">
           <table>
@@ -77,7 +79,7 @@ function App() {
               </tr>
             </tbody>
           </table>
-
+        </p>
           <h2>Driving Information</h2>
           <p>
             Estimated Travel Time: <strong>{data.estimated_travel_time}</strong>
