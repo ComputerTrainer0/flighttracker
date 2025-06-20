@@ -13,7 +13,7 @@ function App() {
     setData(null);
     try {
       const res = await fetch(
-        `https://17hovlzcka.amazonaws.com/departure?flight=${flight}&location=${encodeURIComponent(
+        `https://17hovlzcka.execute-api.us-east-1.amazonaws.com/departure?flight=${flight}&location=${encodeURIComponent(
           location
         )}&date=${date}`
       );
